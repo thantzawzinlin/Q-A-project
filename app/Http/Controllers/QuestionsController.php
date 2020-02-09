@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AskQuestionRequest;
 use App\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class QuestionsController extends Controller
 {
@@ -66,6 +67,11 @@ class QuestionsController extends Controller
      */
     public function edit(Question $question)
     {
+        if (Gate::denies('update-question', $question))
+         {
+        toastr('Sorry, You do not have permission to edit this question.','warning');
+        return redirect()->route('questions.index');
+         }
         return view('questions.edit',compact('question'));
         
     }
@@ -92,6 +98,11 @@ class QuestionsController extends Controller
      */
     public function destroy(Question $question)
     {
+        if (Gate::denies('delete-question', $question))
+         {
+        toastr('Sorry, You do not have permission to delete this question.','warning');
+        return redirect()->route('questions.index');
+         }
         $question->delete();
         toastr('Question is successfully Deleted','success');
         return redirect()->route('questions.index');
